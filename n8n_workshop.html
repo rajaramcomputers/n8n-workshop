@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Local AI Workflows with n8n — Workshop | Rajaram Systems</title>
+<meta name="description" content="Hands-on n8n AI workflow lab — installation guide, lab manuals, and workflow downloads."/>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Fira+Code:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--orange:#E05500;--dark:#1A1A1A;--navy:#1A2332;--white:#FFFFFF;--green:#27AE60;--blue:#2980B9;--teal:#148F77;--purple:#6C3483;--red:#C0392B;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:#0f0f0f;color:#f0ede8;line-height:1.7;}
+
+nav{position:sticky;top:0;z-index:100;background:#1a1a1a;border-bottom:2px solid var(--orange);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:58px;}
+.nav-brand{font-size:18px;font-weight:900;color:var(--orange);text-decoration:none;}
+.nav-links{display:flex;gap:24px;}
+.nav-links a{color:#ccc;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--orange);}
+
+.hero{background:linear-gradient(135deg,#1a1a1a 0%,#2a1a0a 50%,#1a1a1a 100%);border-bottom:3px solid var(--orange);padding:80px 32px 72px;text-align:center;}
+.hero-badge{display:inline-block;background:var(--orange);color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:5px 16px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-size:clamp(28px,5vw,52px);font-weight:900;color:#fff;line-height:1.15;margin-bottom:14px;}
+.hero h1 span{color:var(--orange);}
+.hero p{font-size:17px;color:#aaa;max-width:640px;margin:0 auto 32px;}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:36px;}
+.chip{background:#2a2a2a;border:1px solid #3a3a3a;color:#ccc;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.btn-p{background:var(--orange);color:#fff;padding:13px 28px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;transition:opacity 0.2s;}
+.btn-p:hover{opacity:0.88;}
+.btn-o{background:transparent;color:#fff;padding:13px 28px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;border:2px solid #444;transition:border-color 0.2s;}
+.btn-o:hover{border-color:var(--orange);}
+
+.section{max-width:1100px;margin:0 auto;padding:72px 24px;}
+.sec-title{font-size:28px;font-weight:900;color:#fff;margin-bottom:8px;}
+.sec-sub{font-size:15px;color:#888;margin-bottom:40px;}
+hr.sd{border:none;border-top:1px solid #2a2a2a;margin:0 24px;}
+
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;overflow:hidden;}
+.card-hdr{padding:12px 20px;display:flex;align-items:center;gap:10px;}
+.card-hdr span{font-size:22px;}
+.card-hdr h3{font-size:14px;font-weight:700;color:#fff;}
+.card-body{padding:20px;}
+.card-body p{font-size:13px;color:#aaa;margin-bottom:12px;}
+
+.cmd{background:#111;border:1px solid #2a2a2a;border-left:4px solid var(--orange);border-radius:8px;padding:14px 16px;margin:10px 0;position:relative;}
+.cmd pre{font-family:'Fira Code',monospace;font-size:12.5px;color:#e0e0e0;white-space:pre-wrap;word-break:break-all;padding-right:64px;}
+.cmd .c{color:#555;}
+.cp{position:absolute;top:10px;right:10px;background:#2a2a2a;border:none;color:#aaa;font-size:11px;font-weight:700;padding:4px 12px;border-radius:6px;cursor:pointer;transition:all 0.15s;}
+.cp:hover{background:var(--orange);color:#fff;}
+.cp.ok{background:var(--green)!important;color:#fff;}
+.lbl{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;margin:14px 0 5px;}
+.note{background:#1e1a0a;border-left:4px solid var(--orange);border-radius:0 8px 8px 0;padding:11px 15px;font-size:13px;color:#c9a96e;margin:10px 0;font-style:italic;}
+.ok-note{background:#0a1e0a;border-left:4px solid var(--green);border-radius:0 8px 8px 0;padding:11px 15px;font-size:13px;color:#7dba7d;margin:10px 0;}
+
+.params{width:100%;border-collapse:collapse;margin:12px 0 16px;font-size:13px;}
+.params th{background:#1f1f1f;color:#aaa;font-weight:600;padding:8px 12px;text-align:left;border-bottom:1px solid #2a2a2a;}
+.params td{padding:8px 12px;border-bottom:1px solid #1e1e1e;color:#ccc;vertical-align:top;}
+.params td:first-child{color:#888;font-weight:600;width:32%;white-space:nowrap;}
+.params tr:last-child td{border-bottom:none;}
+code{background:#1a1a1a;border:1px solid #333;border-radius:4px;padding:1px 7px;font-family:'Fira Code',monospace;font-size:12px;color:var(--orange);}
+
+.ex-grid{display:grid;gap:20px;}
+.ex-card{background:#161616;border:1px solid #2a2a2a;border-radius:16px;overflow:hidden;}
+.ex-hdr{padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.ex-hdr-l{display:flex;align-items:center;gap:14px;}
+.ex-num{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#fff;flex-shrink:0;}
+.ex-title{font-size:17px;font-weight:800;color:#fff;}
+.ex-sub{font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px;}
+.badges{display:flex;gap:8px;flex-wrap:wrap;}
+.bdg{background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.75);font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;}
+.ex-body{padding:20px 22px;}
+.ex-desc{font-size:14px;color:#bbb;margin-bottom:14px;line-height:1.7;}
+.arch{background:#0f0f0f;border:1px solid #2a2a2a;border-radius:8px;padding:14px 16px;margin-bottom:14px;font-family:'Fira Code',monospace;font-size:12px;color:#999;line-height:2.1;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.btn-dl{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:opacity 0.2s;border:none;cursor:pointer;}
+.btn-dl:hover{opacity:0.85;}
+.b-or{background:var(--orange);color:#fff;}
+.b-gr{background:#27AE60;color:#fff;}
+.b-gy{background:#2a2a2a;color:#ddd;}
+.b-cp{background:#1a1a1a;color:#ddd;border:1px solid #3a3a3a;}
+
+.dl-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+.dl-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:20px;}
+.dl-card-icon{font-size:32px;margin-bottom:10px;}
+.dl-card h4{font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;}
+.dl-card p{font-size:13px;color:#888;margin-bottom:14px;}
+.dl-card a{display:inline-flex;align-items:center;gap:7px;background:var(--orange);color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:opacity 0.2s;}
+.dl-card a:hover{opacity:0.85;}
+
+footer{background:#111;border-top:1px solid #222;padding:36px 24px;text-align:center;color:#555;font-size:13px;}
+footer a{color:var(--orange);text-decoration:none;}
+@media(max-width:600px){.nav-links{display:none;}.hero{padding:56px 20px 48px;}.actions{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#">🤖 n8n Workshop</a>
+  <div class="nav-links">
+    <a href="#install">Installation</a>
+    <a href="#warmup">Warm-Up</a>
+    <a href="#exercises">Exercises</a>
+    <a href="#downloads">Downloads</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">Hands-On Lab Workshop</div>
+  <h1>Local AI Workflows<br>with <span>n8n</span></h1>
+  <p>Build 7 real AI workflows using n8n, Ollama, Docker, and Qdrant — completely free, no API keys, runs on your own machine.</p>
+  <div class="chips">
+    <span class="chip">🐳 Docker</span><span class="chip">⚡ n8n</span><span class="chip">🤖 Ollama</span>
+    <span class="chip">🔍 Qdrant</span><span class="chip">🧠 7 Exercises</span><span class="chip">💻 CPU Only</span>
+    <span class="chip">🔑 No API Keys</span><span class="chip">🆓 Free & Open Source</span>
+  </div>
+  <div class="hero-btns">
+    <a href="#install" class="btn-p">🚀 Get Started</a>
+    <a href="#downloads" class="btn-o">📥 Download Files</a>
+  </div>
+</div>
+
+<!-- ══ INSTALLATION ══════════════════════════════════════ -->
+<hr class="sd" id="install"/>
+<div class="section">
+  <div class="sec-title">🛠️ Installation Guide</div>
+  <div class="sec-sub">Follow these steps on Windows before the workshop. Only needs to be done once.</div>
+  <div class="grid2">
+
+    <div class="card">
+      <div class="card-hdr" style="background:var(--orange);"><span>1️⃣</span><h3>Install Docker Desktop</h3></div>
+      <div class="card-body">
+        <p>Download and install Docker Desktop for Windows. Enable WSL2 when prompted during installation.</p>
+        <a href="https://www.docker.com/products/docker-desktop/" target="_blank" class="btn-dl b-or" style="margin-bottom:12px;display:inline-flex;">⬇️ Download Docker Desktop</a>
+        <div class="lbl">Verify installation</div>
+        <div class="cmd"><pre>docker --version
+docker compose version</pre><button class="cp" onclick="c(this,'docker --version\ndocker compose version')">Copy</button></div>
+        <div class="note">⚠️ Restart your computer after Docker Desktop installs. The Docker whale icon must appear in the Windows system tray before continuing.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hdr" style="background:var(--orange);"><span>2️⃣</span><h3>Clone the n8n AI Starter Kit</h3></div>
+      <div class="card-body">
+        <p>Open PowerShell and run these commands to download and start the n8n AI Starter Kit.</p>
+        <div class="cmd"><pre><span class="c"># Clone the starter kit</span>
+git clone https://github.com/n8n-io/self-hosted-ai-starter-kit.git
+cd self-hosted-ai-starter-kit
+
+<span class="c"># Start all services in CPU mode</span>
+docker compose --profile cpu up -d
+
+<span class="c"># Check all 4 containers are running</span>
+docker ps</pre><button class="cp" onclick="c(this,'git clone https://github.com/n8n-io/self-hosted-ai-starter-kit.git\ncd self-hosted-ai-starter-kit\ndocker compose --profile cpu up -d\ndocker ps')">Copy</button></div>
+        <div class="ok-note">✅ Expected: 4 containers running — n8n, ollama, postgres, qdrant</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hdr" style="background:var(--orange);"><span>3️⃣</span><h3>Verify Services</h3></div>
+      <div class="card-body">
+        <p>Open these URLs in your browser to confirm everything is running correctly.</p>
+        <div class="lbl">n8n Dashboard</div>
+        <div class="cmd"><pre>http://localhost:5678</pre><button class="cp" onclick="c(this,'http://localhost:5678')">Copy</button></div>
+        <div class="lbl">Qdrant Dashboard</div>
+        <div class="cmd"><pre>http://localhost:6333/dashboard</pre><button class="cp" onclick="c(this,'http://localhost:6333/dashboard')">Copy</button></div>
+        <div class="note">💡 Always use <code>http://ollama:11434</code> inside n8n nodes — never localhost. Containers communicate using service names.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hdr" style="background:var(--orange);"><span>4️⃣</span><h3>First Login to n8n</h3></div>
+      <div class="card-body">
+        <p>When you open n8n for the first time it asks you to create an account. Use these workshop credentials:</p>
+        <table class="params">
+          <tr><td>Email</td><td><code>admin@n8n.local</code></td></tr>
+          <tr><td>Password</td><td><code>Admin@1234</code></td></tr>
+          <tr><td>First Name</td><td><code>Admin</code></td></tr>
+          <tr><td>Last Name</td><td><code>User</code></td></tr>
+        </table>
+        <div class="note">⚠️ For lab use only.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ WARM-UP ═══════════════════════════════════════════ -->
+<hr class="sd" id="warmup"/>
+<div class="section">
+  <div class="sec-title">🔥 Warm-Up Commands</div>
+  <div class="sec-sub">Run these before the workshop. Total download ~9 GB. Only needs to be done once.</div>
+  <div class="grid2">
+
+    <div class="card">
+      <div class="card-hdr" style="background:#2a2a2a;border-bottom:2px solid var(--orange);"><span>🤖</span><h3>Pull All AI Models</h3></div>
+      <div class="card-body">
+        <div class="cmd"><pre><span class="c"># Exercise 1 — AI Code Reviewer</span>
+docker exec -it ollama ollama pull tinyllama
+
+<span class="c"># Exercises 2 and 3 — ELI5 + File Summariser</span>
+docker exec -it ollama ollama pull phi3:mini
+
+<span class="c"># Exercises 5 and 6 — Calculator + Logger</span>
+docker exec -it ollama ollama pull qwen2.5:3b
+
+<span class="c"># Exercise 7 — RAG embeddings</span>
+docker exec -it ollama ollama pull mxbai-embed-large
+
+<span class="c"># Verify all models downloaded</span>
+docker exec -it ollama ollama list</pre>
+<button class="cp" onclick="c(this,'docker exec -it ollama ollama pull tinyllama\ndocker exec -it ollama ollama pull phi3:mini\ndocker exec -it ollama ollama pull qwen2.5:3b\ndocker exec -it ollama ollama pull mxbai-embed-large\ndocker exec -it ollama ollama list')">Copy All</button></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hdr" style="background:#2a2a2a;border-bottom:2px solid var(--green);"><span>📁</span><h3>File Folder Setup — Exercise 3</h3></div>
+      <div class="card-body">
+        <p>Run at the start of each session before Exercise 3. The folder is lost on every Docker restart.</p>
+        <div class="cmd" style="border-left-color:var(--green);"><pre><span class="c"># Create shared folder inside n8n container</span>
+docker exec -it n8n mkdir -p /home/node/.n8n-files
+
+<span class="c"># Upload file (from your current folder)</span>
+docker cp document.txt n8n:/home/node/.n8n-files/document.txt
+
+<span class="c"># Download result (to your current folder — dot = here)</span>
+docker cp n8n:/home/node/.n8n-files/summary.txt .</pre>
+<button class="cp" onclick="c(this,'docker exec -it n8n mkdir -p /home/node/.n8n-files')">Copy mkdir</button></div>
+        <div class="note">⚠️ The dot (.) at the end of the download command means "save to my current folder".</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ EXERCISES ══════════════════════════════════════════ -->
+<hr class="sd" id="exercises"/>
+<div class="section">
+  <div class="sec-title">🧪 The 7 Exercises</div>
+  <div class="sec-sub">Each exercise builds on the previous. Download the workflow JSON, import it into n8n, and follow the lab manual.</div>
+  <div class="ex-grid">
+
+    <!-- EX 1 -->
+    <div class="ex-card">
+      <div class="ex-hdr" style="background:#C0392B;">
+        <div class="ex-hdr-l">
+          <div class="ex-num">1</div>
+          <div><div class="ex-title">🔍 AI Code Reviewer</div><div class="ex-sub">Webhook · Basic LLM Chain · tinyllama</div></div>
+        </div>
+        <div class="badges"><span class="bdg">⏱ 15 min</span><span class="bdg">3 Nodes</span></div>
+      </div>
+      <div class="ex-body">
+        <p class="ex-desc">Submit any code snippet via HTTP POST and receive a professional AI code review — issues found and improvements suggested. Test using the browser HTML tester page provided.</p>
+        <div class="arch">Webhook → Basic LLM Chain → Respond to Webhook
+              ↑
+        Ollama Model (tinyllama)</div>
+        <table class="params">
+          <tr><th>Node</th><th>Key Parameter</th></tr>
+          <tr><td>Webhook</td><td><code>Path: roast-my-code · Method: POST · Response Mode: Response Node</code></td></tr>
+          <tr><td>Basic LLM Chain</td><td><code>Prompt (Expression): ={{ $json.body.code }}</code></td></tr>
+          <tr><td>Ollama Model</td><td><code>http://ollama:11434 · Model: tinyllama</code></td></tr>
+          <tr><td>Respond to Webhook</td><td><code>={{ JSON.stringify({ roast: $json.text }) }}</code></td></tr>
+        </table>
+        <div class="actions">
+          <a class="btn-dl b-or" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex01_code_reviewer.json" download>⬇️ Workflow JSON</a>
+          <a class="btn-dl b-gy" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex01_code_reviewer_tester.html" download>⬇️ Browser Tester</a>
+          <button class="btn-dl b-cp" onclick="c(this,'docker exec -it ollama ollama pull tinyllama')">📋 Pull Command</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 2 -->
+    <div class="ex-card">
+      <div class="ex-hdr" style="background:#8E44AD;">
+        <div class="ex-hdr-l">
+          <div class="ex-num">2</div>
+          <div><div class="ex-title">🧠 Explain Like I'm 5</div><div class="ex-sub">Webhook · Basic LLM Chain · Prompt Engineering · phi3:mini</div></div>
+        </div>
+        <div class="badges"><span class="bdg">⏱ 15 min</span><span class="bdg">3 Nodes</span></div>
+      </div>
+      <div class="ex-body">
+        <p class="ex-desc">Submit any CS topic and receive a simple, jargon-free explanation anyone can understand. Teaches prompt engineering — how the system message completely changes the AI output style.</p>
+        <div class="arch">Webhook → Basic LLM Chain → Respond to Webhook
+              ↑
+        Ollama Model (phi3:mini)</div>
+        <table class="params">
+          <tr><th>Node</th><th>Key Parameter</th></tr>
+          <tr><td>Webhook</td><td><code>Path: explain-eli5 · Method: POST · Response Mode: Response Node</code></td></tr>
+          <tr><td>Prompt</td><td><code>=Explain {{ $json.body.topic }} like I am a 5 year old...</code></td></tr>
+          <tr><td>System Message</td><td><code>You are a friendly teacher. Use simple words. No jargon...</code></td></tr>
+          <tr><td>Respond to Webhook</td><td><code>={{ JSON.stringify({ explanation: $json.text }) }}</code></td></tr>
+        </table>
+        <div class="actions">
+          <a class="btn-dl b-or" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex02_explain_like_im_5.json" download>⬇️ Workflow JSON</a>
+          <a class="btn-dl b-gy" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex02_eli5_tester.html" download>⬇️ Browser Tester</a>
+          <button class="btn-dl b-cp" onclick="c(this,'docker exec -it ollama ollama pull phi3:mini')">📋 Pull Command</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 3 -->
+    <div class="ex-card">
+      <div class="ex-hdr" style="background:#27AE60;">
+        <div class="ex-hdr-l">
+          <div class="ex-num">3</div>
+          <div><div class="ex-title">📂 AI File Summariser</div><div class="ex-sub">Manual Trigger · Docker File Handling · phi3:mini</div></div>
+        </div>
+        <div class="badges"><span class="bdg">⏱ 15 min</span><span class="bdg">6 Nodes</span></div>
+      </div>
+      <div class="ex-body">
+        <p class="ex-desc">Upload a text document into the n8n Docker container, let AI summarise it in exactly 3 sentences, and download the result. Teaches Docker file handling with docker cp commands.</p>
+        <div class="arch">Manual Trigger → Read File → Extract from File → Basic LLM Chain
+                                            ↑ Ollama Model (phi3:mini)
+                                            ↓
+                                  Convert to File → Write File</div>
+        <div class="lbl">Docker file commands</div>
+        <div class="cmd" style="border-left-color:var(--green);"><pre><span class="c"># Create folder (run after every Docker restart)</span>
+docker exec -it n8n mkdir -p /home/node/.n8n-files
+
+<span class="c"># Upload document to container</span>
+docker cp document.txt n8n:/home/node/.n8n-files/document.txt
+
+<span class="c"># Download summary to current folder</span>
+docker cp n8n:/home/node/.n8n-files/summary.txt .</pre>
+<button class="cp" onclick="c(this,'docker exec -it n8n mkdir -p /home/node/.n8n-files\ndocker cp document.txt n8n:/home/node/.n8n-files/document.txt\ndocker cp n8n:/home/node/.n8n-files/summary.txt .')">Copy</button></div>
+        <table class="params">
+          <tr><th>Node</th><th>Key Parameter</th></tr>
+          <tr><td>Read File</td><td><code>/home/node/.n8n-files/document.txt</code></td></tr>
+          <tr><td>Prompt</td><td><code>={{ $json.data }} (Expression mode)</code></td></tr>
+          <tr><td>System Message</td><td><code>Summarise in exactly 3 clear sentences...</code></td></tr>
+          <tr><td>Write File</td><td><code>/home/node/.n8n-files/summary.txt</code></td></tr>
+        </table>
+        <div class="actions">
+          <a class="btn-dl b-or" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex03_file_summariser.json" download>⬇️ Workflow JSON</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 4 -->
+    <div class="ex-card">
+      <div class="ex-hdr" style="background:#2980B9;">
+        <div class="ex-hdr-l">
+          <div class="ex-num">4</div>
+          <div><div class="ex-title">🌐 Simple HTTP Request</div><div class="ex-sub">Chat Trigger · HTTP Request · Edit Fields · Public API</div></div>
+        </div>
+        <div class="badges"><span class="bdg">⏱ 5 min</span><span class="bdg">3 Nodes</span><span class="bdg">No AI Model</span></div>
+      </div>
+      <div class="ex-body">
+        <p class="ex-desc">Fetch live data from a public API and display it in the n8n chat. Teaches HTTP GET requests and JSON response handling — the foundation of all API integrations in n8n.</p>
+        <div class="arch">Chat Trigger → HTTP Request → Edit Fields
+             (catfact.ninja)    (extracts fact)</div>
+        <table class="params">
+          <tr><th>Node</th><th>Key Parameter</th></tr>
+          <tr><td>HTTP Request</td><td><code>Method: GET · URL: https://catfact.ninja/fact</code></td></tr>
+          <tr><td>Edit Fields</td><td><code>Name: fact · Value: ={{ $json.fact }}</code></td></tr>
+          <tr><td>Advice API (bonus)</td><td><code>https://api.adviceslip.com/advice → $json.slip.advice</code></td></tr>
+        </table>
+        <div class="actions">
+          <a class="btn-dl b-or" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex04_http_request.json" download>⬇️ Workflow JSON</a>
+          <button class="btn-dl b-cp" onclick="c(this,'https://catfact.ninja/fact')">📋 Copy API URL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 5 -->
+    <div class="ex-card">
+      <div class="ex-hdr" style="background:#E05500;">
+        <div class="ex-hdr-l">
+          <div class="ex-num">5</div>
+          <div><div class="ex-title">🧮 AI Calculator</div><div class="ex-sub">Chat Trigger · AI Agent · Calculator Tool · Simple Memory · qwen2.5:3b</div></div>
+        </div>
+        <div class="badges"><span class="bdg">⏱ 10 min</span><span class="bdg">AI Agent</span></div>
+      </div>
+      <div class="ex-body">
+        <p class="ex-desc">A conversational AI financial assistant that uses the built-in Calculator Tool for exact computations and remembers the last 10 messages. Introduces the AI Agent — n8n's most powerful AI construct.</p>
+        <div class="arch">Chat Trigger → AI Agent → Response
+                 ↑         ↑         ↑
+          Chat Model   Memory   Calculator
+         (qwen2.5:3b)   (10)     Tool</div>
+        <table class="params">
+          <tr><th>Node</th><th>Key Parameter</th></tr>
+          <tr><td>AI Agent</td><td><code>System: You are a helpful financial assistant...</code></td></tr>
+          <tr><td>Ollama Chat Model</td><td><code>http://ollama:11434 · qwen2.5:3b · keepAlive: 1h · numPredict: 200</code></td></tr>
+          <tr><td>Simple Memory</td><td><code>Context Window Length: 10</code></td></tr>
+          <tr><td>Calculator Tool</td><td><code>No parameters needed</code></td></tr>
+        </table>
+        <div class="actions">
+          <a class="btn-dl b-or" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex05_calculator.json" download>⬇️ Workflow JSON</a>
+          <button class="btn-dl b-cp" onclick="c(this,'docker exec -it ollama ollama pull qwen2.5:3b')">📋 Pull Command</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 6 -->
+    <div class="ex-card">
+      <div class="ex-hdr" style="background:#6C3483;">
+        <div class="ex-hdr-l">
+          <div class="ex-num">6</div>
+          <div><div class="ex-title">💾 AI Interaction Logger</div><div class="ex-sub">Chat Trigger · AI Agent · Code Tool · Insert Row · Data Table</div></div>
+        </div>
+        <div class="badges"><span class="bdg">⏱ 15 min</span><span class="bdg">AI Agent + DB</span></div>
+      </div>
+      <div class="ex-body">
+        <p class="ex-desc">An AI CS tutor that answers questions AND automatically logs every interaction to an n8n Data Table — saving the question, answer summary, word count, sentence count, and timestamp permanently.</p>
+        <div class="arch">Chat Trigger → AI Agent → Insert Row (Data Table)
+                 ↑    ↑    ↑
+          Chat Model  Memory  Code Tool</div>
+        <div class="lbl">Code Tool — JavaScript</div>
+        <div class="cmd" style="border-left-color:#6C3483;"><pre>const input = $input.first().json;
+const text = input.code || input.query || input._query || '';
+const words = text.trim().split(/\s+/).filter(w => w).length;
+const sentences = text.split(/[.!?]+/).filter(s => s.trim()).length;
+return `Analysed: ${words} words, ${sentences} sentences.`;</pre>
+<button class="cp" onclick="c(this,&quot;const input = $input.first().json;\nconst text = input.code || input.query || input._query || '';\nconst words = text.trim().split(/\\s+/).filter(w => w).length;\nconst sentences = text.split(/[.!?]+/).filter(s => s.trim()).length;\nreturn `Analysed: ${words} words, ${sentences} sentences.`;&quot;)">Copy</button></div>
+        <table class="params">
+          <tr><th>Field</th><th>Expression</th></tr>
+          <tr><td>question</td><td><code>={{ $('When chat message received').item.json.chatInput }}</code></td></tr>
+          <tr><td>answer_summary</td><td><code>={{ $json.output.slice(0, 200) }}</code></td></tr>
+          <tr><td>word_count</td><td><code>={{ $json.output.trim().split(/\s+/).length }}</code></td></tr>
+          <tr><td>sentence_count</td><td><code>={{ $json.output.split(/[.!?]+/).filter(s=>s.trim()).length }}</code></td></tr>
+          <tr><td>timestamp</td><td><code>={{ new Date().toISOString().replace("T"," ").slice(0,19) }}</code></td></tr>
+        </table>
+        <div class="actions">
+          <a class="btn-dl b-or" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex06_interaction_logger.json" download>⬇️ Workflow JSON</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- EX 7 -->
+    <div class="ex-card">
+      <div class="ex-hdr" style="background:#148F77;">
+        <div class="ex-hdr-l">
+          <div class="ex-num">7</div>
+          <div><div class="ex-title">🔍 RAG Pipeline</div><div class="ex-sub">Two Workflows · Qdrant · mxbai-embed-large · qwen2.5:3b</div></div>
+        </div>
+        <div class="badges"><span class="bdg">⏱ 20 min</span><span class="bdg">Two Workflows</span><span class="bdg">Vector DB</span></div>
+      </div>
+      <div class="ex-body">
+        <p class="ex-desc">Build a full RAG system — upload a PDF, store it as vectors in Qdrant, then chat with your own document. The AI answers only from your uploaded content, not from training data.</p>
+        <div class="arch">Workflow 1: n8n Form → Qdrant (insert) ← Embeddings + Text Splitter
+Workflow 2: Chat Trigger → AI Agent → Response
+                  ↑  ↑  ↑
+           Model  Memory  Qdrant Retriever ← Embeddings Ollama</div>
+        <table class="params">
+          <tr><th>Setting</th><th>Value</th></tr>
+          <tr><td>Qdrant Collection</td><td><code>rag_collection · Vector Size: 1024 · Distance: Cosine</code></td></tr>
+          <tr><td>Text Splitter</td><td><code>Chunk Size: 200 · Chunk Overlap: 50</code></td></tr>
+          <tr><td>Embedding Model</td><td><code>mxbai-embed-large:latest (both workflows)</code></td></tr>
+          <tr><td>Tool Name</td><td><code>retriever</code></td></tr>
+          <tr><td>Chat Model</td><td><code>qwen2.5:3b · keepAlive: 1h · numPredict: 150</code></td></tr>
+        </table>
+        <div class="note">⚠️ The Qdrant retriever needs its own separate Embeddings Ollama node — it cannot share the one from Workflow 1.</div>
+        <div class="actions">
+          <a class="btn-dl b-or" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex07_rag_pipeline.json" download>⬇️ Workflow JSON</a>
+          <a class="btn-dl b-gr" href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/What-is-RAG-sourced.pdf" download>⬇️ Sample PDF</a>
+          <button class="btn-dl b-cp" onclick="c(this,'docker exec -it ollama ollama pull mxbai-embed-large')">📋 Pull Command</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ DOWNLOADS ══════════════════════════════════════════ -->
+<hr class="sd" id="downloads"/>
+<div class="section">
+  <div class="sec-title">📥 All Downloads</div>
+  <div class="sec-sub">Everything you need for the workshop in one place.</div>
+  <div class="dl-grid">
+    <div class="dl-card">
+      <div class="dl-card-icon">📖</div>
+      <h4>Complete Lab Manual</h4>
+      <p>All 7 exercises — step-by-step instructions, parameters, troubleshooting, and bonus challenges.</p>
+      <a href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/complete_lab_manual.pdf" download>⬇️ Download PDF</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-card-icon">📊</div>
+      <h4>Workshop Presentation</h4>
+      <p>21-slide PPT — Docker, n8n, Ollama, Qdrant setup and all 7 exercises with input/output examples.</p>
+      <a href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/workshop_presentation.pptx" download>⬇️ Download PPTX</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-card-icon">📝</div>
+      <h4>MCQ Assessment</h4>
+      <p>2 sets × 15 questions covering all 7 exercises. Answer key on the last page.</p>
+      <a href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/mcq_assessment.pdf" download>⬇️ Download PDF</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-card-icon">📄</div>
+      <h4>Sample RAG PDF</h4>
+      <p>One-page document about RAG for Exercise 7 testing. Contains 6 labelled sources.</p>
+      <a href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/What-is-RAG-sourced.pdf" download>⬇️ Download PDF</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-card-icon">📂</div>
+      <h4>All Workflow Files</h4>
+      <p>All 7 workflow JSON files numbered to match the lab manual. Import directly into n8n.</p>
+      <a href="https://github.com/rajaramcomputers/n8n-workshop" target="_blank">📂 Browse GitHub Repo</a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-card-icon">🌐</div>
+      <h4>Browser Testers</h4>
+      <p>HTML tester pages for Exercise 1 (Code Reviewer) and Exercise 2 (ELI5) — open in any browser.</p>
+      <a href="https://github.com/rajaramcomputers/n8n-workshop/raw/main/files/ex02_eli5_tester.html" download>⬇️ ELI5 Tester</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <p style="margin-bottom:8px;">Built for <strong style="color:#fff;">Ganpat University</strong> students</p>
+  <p>n8n · Ollama · Docker · Qdrant · PostgreSQL — all free and open source</p>
+  <p style="margin-top:12px;"><a href="https://rajaramsystems.com">rajaramsystems.com</a> &nbsp;·&nbsp; <a href="https://github.com/rajaramcomputers/n8n-workshop" target="_blank">GitHub Repository</a></p>
+</footer>
+
+<script>
+function c(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{
+    const o=btn.textContent;btn.textContent='✓ Copied!';btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent=o;btn.classList.remove('ok');},2000);
+  }).catch(()=>{
+    const t=document.createElement('textarea');t.value=text;document.body.appendChild(t);
+    t.select();document.execCommand('copy');document.body.removeChild(t);
+    const o=btn.textContent;btn.textContent='✓ Copied!';btn.classList.add('ok');
+    setTimeout(()=>{btn.textContent=o;btn.classList.remove('ok');},2000);
+  });
+}
+</script>
+</body>
+</html>

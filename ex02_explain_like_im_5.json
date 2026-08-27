@@ -1,0 +1,144 @@
+{
+  "name": "Explain like Im 5_p1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "explain",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        -80
+      ],
+      "id": "3fdf7a8e-bfa9-4671-b94e-01e7f8ea9a42",
+      "name": "Webhook",
+      "webhookId": "ad04c6e7-5ff4-4372-a68d-07e89c9d12c7"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Explain {{ $json.body.topic }} like I am a 5 year old child. Use simple words only. Keep it under 5 sentences. Never use technical terms.",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a friendly teacher who explains things simply. Always use easy words. Never use technical terms. Keep answers under 5 sentences."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -144,
+        -80
+      ],
+      "id": "ea91ed81-1128-498e-831e-0f7c07d5a7c7",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "phi3:mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        128
+      ],
+      "id": "16f4ffc6-3b70-4cce-a86c-aa509a345f1a",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "s5K98b2ykbaf8IfT",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ explanation: $json.text }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        208,
+        -80
+      ],
+      "id": "ae74d02d-2bfa-4831-ba5a-00dde3a24571",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {
+    "Respond to Webhook": [
+      {
+        "json": {
+          "name": "First item",
+          "code": 1
+        }
+      },
+      {
+        "json": {
+          "name": "Second item",
+          "code": 2
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1869ded7-34e2-405d-969b-520981f5ab56",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3bc388a09fd3769712699146d3752a0929f16c457e72c2481728b51f0862297a"
+  },
+  "nodeGroups": [],
+  "id": "a3vylkIL6z8KkHAL",
+  "tags": []
+}

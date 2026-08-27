@@ -1,0 +1,144 @@
+{
+  "name": "AI Calculator",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -288,
+        -48
+      ],
+      "id": "8d0f0b3a-3b68-44ff-a904-d4a3da54034b",
+      "name": "When chat message received",
+      "webhookId": "20c3e1e8-14c2-4140-bfed-aa1f3800acdb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful financial assistant, help me the calculator tool"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -80,
+        -48
+      ],
+      "id": "1c6b5a5c-f399-41d0-8a6d-2e8a8588eb0d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:3b",
+        "options": {
+          "think": false,
+          "keepAlive": "1h",
+          "numPredict": 200
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        160
+      ],
+      "id": "78e0e03c-3ccd-4366-9f78-6037224def4e",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "s5K98b2ykbaf8IfT",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -80,
+        160
+      ],
+      "id": "3a2b257b-6e47-4ea3-bdb6-8cf3887bcd2d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        80,
+        160
+      ],
+      "id": "77b627fe-3e8b-4a0d-b309-278bb4228015",
+      "name": "Calculator"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "36465283-47af-4327-88b2-826310733f91",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3bc388a09fd3769712699146d3752a0929f16c457e72c2481728b51f0862297a"
+  },
+  "nodeGroups": [],
+  "id": "0J6jw0XLfl33aQJ5",
+  "tags": []
+}

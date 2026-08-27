@@ -1,0 +1,247 @@
+{
+  "name": "ai agent code tool",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -336,
+        -64
+      ],
+      "id": "984b4eaa-02ca-4cb1-b572-81bec9c5968e",
+      "name": "When chat message received",
+      "webhookId": "533ea1b4-ecc3-4f7d-a625-e0f946012ea6"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -128,
+        -64
+      ],
+      "id": "5a785045-a113-491e-8a70-d4c33861e0b2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "qwen2.5:3b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        144
+      ],
+      "id": "aff05fc1-faf0-4662-9e04-09f44e0aeaea",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "s5K98b2ykbaf8IfT",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -128,
+        144
+      ],
+      "id": "697dbaa7-8451-4030-b8bd-3bb22abc046a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst text = input.code || input.query || input._query || '';\n \n// Analyse the text\nconst words = text.trim().split(/\\s+/).filter(w => w).length;\nconst sentences = text.split(/[.!?]+/).filter(s => s.trim()).length;\nconst readingTime = Math.ceil(words / 200);\nconst chars = text.length;\n \nreturn JSON.stringify({\n  words,\n  sentences,\n  characters: chars,\n  readingTimeMinutes: readingTime,\n  avgWordsPerSentence: sentences > 0 ? Math.round(words / sentences) : 0\n});\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        32,
+        144
+      ],
+      "id": "fa765a48-e152-43a8-84d8-c26ce86c9176",
+      "name": "Code Tool"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "srgc4uJtuP24Ggwa",
+          "mode": "list",
+          "cachedResultName": "ai_interaction_log",
+          "cachedResultUrl": "/projects/SS9sqeIKpLYai9t0/datatables/srgc4uJtuP24Ggwa"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "question": "={{ $('When chat message received').item.json.chatInput }}",
+            "answer_summary": "={{ $json.output.slice(0, 200) }}",
+            "word_count": "={{ $json.output.trim().split(/\\s+/).length }}",
+            "sentence_count": "={{ $json.output.split(/[.!?]+/).filter(s => s.trim()).length }}",
+            "timestatmp": "={{ new Date().toISOString().replace(\"T\",\" \").slice(0,19) }}",
+            "reading_time": "={{ Math.ceil($json.output.trim().split(/\\s+/).length / 200) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "question",
+              "displayName": "question",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "answer_summary",
+              "displayName": "answer_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "word_count",
+              "displayName": "word_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "sentence_count",
+              "displayName": "sentence_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "reading_time",
+              "displayName": "reading_time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "timestatmp",
+              "displayName": "timestatmp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "optimizeBulk": false
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        -64
+      ],
+      "id": "cded0fba-6902-48d3-b314-ae96389bfce6",
+      "name": "Insert row"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1877cb0f-8503-45c0-89a6-bebab58c9377",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3bc388a09fd3769712699146d3752a0929f16c457e72c2481728b51f0862297a"
+  },
+  "nodeGroups": [],
+  "id": "mjAlsJYr561Lt8Xl",
+  "tags": []
+}

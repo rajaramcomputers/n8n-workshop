@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>🧠 Explain Like I'm 5</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Fira+Code:wght@400&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0d0d0d;
+    color: #f0ede8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+
+  .card {
+    background: #161616;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 36px;
+    width: 100%;
+    max-width: 680px;
+  }
+
+  .header { text-align: center; margin-bottom: 32px; }
+  .header .icon { font-size: 52px; display: block; margin-bottom: 10px; }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(90deg, #8e44ad, #3498db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p { font-size: 14px; color: #777; margin-top: 6px; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 8px;
+  }
+
+  .url-input {
+    width: 100%;
+    background: #0f0f0f;
+    border: 1px solid #2e2e2e;
+    border-radius: 8px;
+    padding: 9px 14px;
+    color: #aaa;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    outline: none;
+    margin-bottom: 20px;
+  }
+
+  .topic-input {
+    width: 100%;
+    background: #0f0f0f;
+    border: 1px solid #2e2e2e;
+    border-radius: 12px;
+    padding: 16px;
+    color: #f0ede8;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 20px;
+  }
+  .topic-input:focus { border-color: #8e44ad; }
+  .topic-input::placeholder { color: #444; }
+
+  /* Suggestion chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .chip {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #bbb;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip:hover { background: #8e44ad22; border-color: #8e44ad; color: #fff; }
+
+  button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #8e44ad, #3498db);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  button:hover { opacity: 0.9; }
+  button:active { transform: scale(0.99); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .spinner { display: none; text-align: center; padding: 20px 0; font-size: 13px; color: #666; }
+  .spinner.visible { display: block; }
+
+  .error-box {
+    margin-top: 20px;
+    background: #1a0a0a;
+    border: 1px solid #5a1a1a;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #f09090;
+    display: none;
+  }
+  .error-box.visible { display: block; }
+
+  .result-box {
+    margin-top: 28px;
+    display: none;
+  }
+  .result-box.visible { display: block; }
+
+  .result-section {
+    background: #0f0f0f;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+  }
+  .result-section .tag {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #8e44ad;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .result-section .text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #ddd;
+    white-space: pre-wrap;
+  }
+
+  .footer { margin-top: 28px; text-align: center; font-size: 12px; color: #444; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <span class="icon">🧠</span>
+    <h1>Explain Like I'm 5</h1>
+    <p>Type any topic — get a simple explanation anyone can understand.</p>
+  </div>
+
+  <label>Webhook URL</label>
+  <input class="url-input" id="webhook-url"
+    value="http://localhost:5678/webhook/explain-eli5"/>
+
+  <label>Topic</label>
+  <input class="topic-input" id="topic-input"
+    type="text"
+    placeholder="e.g. how does the internet work?"
+    onkeydown="if(event.key==='Enter') explain()"/>
+
+  <label>Try one of these</label>
+  <div class="chips">
+    <span class="chip" onclick="setTopic('How does the internet work')">🌐 Internet</span>
+    <span class="chip" onclick="setTopic('What is RAM in a computer')">💾 RAM</span>
+    <span class="chip" onclick="setTopic('What is an operating system')">🖥️ OS</span>
+    <span class="chip" onclick="setTopic('How does Wi-Fi work')">📶 Wi-Fi</span>
+    <span class="chip" onclick="setTopic('What is a database')">🗄️ Database</span>
+    <span class="chip" onclick="setTopic('What is artificial intelligence')">🤖 AI</span>
+  </div>
+
+  <button onclick="explain()">🧠 Explain It!</button>
+
+  <div class="spinner" id="spinner">⏳ AI is thinking of a simple way to explain...</div>
+  <div class="error-box" id="error-box"></div>
+
+  <div class="result-box" id="result-box">
+    <div class="result-section">
+      <span class="tag">AI Explanation</span>
+      <div class="text" id="result-text"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Ganpat University</div>
+
+<script>
+function setTopic(t) {
+  document.getElementById('topic-input').value = t;
+  document.getElementById('topic-input').focus();
+}
+
+async function explain() {
+  const topic   = document.getElementById('topic-input').value.trim();
+  const url     = document.getElementById('webhook-url').value.trim();
+  const btn     = document.querySelector('button');
+  const spinner = document.getElementById('spinner');
+  const resultBox  = document.getElementById('result-box');
+  const resultText = document.getElementById('result-text');
+  const errorBox   = document.getElementById('error-box');
+
+  resultBox.classList.remove('visible');
+  errorBox.classList.remove('visible');
+
+  if (!topic) {
+    errorBox.textContent = '⚠️ Please enter a topic first.';
+    errorBox.classList.add('visible');
+    return;
+  }
+
+  btn.disabled = true;
+  spinner.classList.add('visible');
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic })
+    });
+
+    if (!response.ok) throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+
+    const data = await response.json();
+    const text = data.explanation || data.text || data.roast || JSON.stringify(data);
+    resultText.textContent = text;
+    resultBox.classList.add('visible');
+
+  } catch (err) {
+    errorBox.textContent = '❌ Could not reach n8n. Is the workflow active? Error: ' + err.message;
+    errorBox.classList.add('visible');
+  } finally {
+    btn.disabled = false;
+    spinner.classList.remove('visible');
+  }
+}
+</script>
+
+</body>
+</html>

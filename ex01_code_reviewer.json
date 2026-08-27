@@ -1,0 +1,129 @@
+{
+  "name": "code_reviewer_p1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "review-my-code",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        -96
+      ],
+      "id": "eefb097e-48f9-4440-b983-39bcac730b48",
+      "name": "Webhook",
+      "webhookId": "efd8ff2b-c805-4653-bc67-5951e3f51bac"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.code }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an experienced senior software developer and code reviewer\nwith 20 years of experience. When someone submits code, you review\nit professionally and helpfully. Always identify issues and suggest\nimprovements. Format your response EXACTLY as:\n \n📋 CODE REVIEW:\n<brief assessment of what the code does and its main issues>\n \n⚠️ ISSUES FOUND:\n1. <issue one>\n2. <issue two>\n \n💡 IMPROVEMENTS:\n1. <improvement one>\n2. <improvement two>\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        80,
+        -96
+      ],
+      "id": "b400113b-1ee6-4275-ac3c-1f26d69bedc0",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "tinyllama:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        160,
+        128
+      ],
+      "id": "d27fbcea-d303-427b-9569-46f6fc050a58",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "s5K98b2ykbaf8IfT",
+          "name": "Ollama account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ roast: $json.text }) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        432,
+        -96
+      ],
+      "id": "4c37499d-cfa3-4ea5-97f9-7d689a3915d2",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "0396d003-71f2-46cb-b06f-d3e7e419e232",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3bc388a09fd3769712699146d3752a0929f16c457e72c2481728b51f0862297a"
+  },
+  "nodeGroups": [],
+  "id": "YqEVjHOGvuFDTlyA",
+  "tags": []
+}

@@ -1,0 +1,95 @@
+{
+  "name": "http request",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -160,
+        -64
+      ],
+      "id": "ebf643e6-be6d-4483-b4e8-bc7b5df0a97b",
+      "name": "When chat message received",
+      "webhookId": "59a5ea94-3eb5-4749-a121-12cfa26940b9"
+    },
+    {
+      "parameters": {
+        "url": "https://api.adviceslip.com/advice",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        48,
+        -64
+      ],
+      "id": "6a899971-77cc-4c31-bd9a-49ff6177f0c0",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1a85a533-3802-4897-832b-9f867e00a870",
+              "name": "advice",
+              "value": "={{ $json.slip.advice }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        -64
+      ],
+      "id": "38413abe-e22c-4537-b94f-77e5ac23cd41",
+      "name": "Edit Fields"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "c229f169-7578-4ad6-bac9-8b238b10336f",
+  "meta": {
+    "instanceId": "3bc388a09fd3769712699146d3752a0929f16c457e72c2481728b51f0862297a"
+  },
+  "nodeGroups": [],
+  "id": "4KmuCQD0PY1ImdOo",
+  "tags": []
+}
